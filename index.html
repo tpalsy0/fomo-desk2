@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Desk">
+<meta name="theme-color" content="#000000">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>FOMO Desk</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="err" hidden></div>
+
+<div id="locked" class="locked-msg" hidden>
+  Open your private app link once on this phone to unlock the desk.
+</div>
+
+<div id="app" hidden>
+  <!-- HOME -->
+  <section id="view-home" class="view on">
+    <div class="nav">
+      <button class="avatar" id="home-avatar" aria-label="Account">G</button>
+      <div class="brand">Grok Bot ›</div>
+      <button class="nav-btn" id="btn-search" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+      </button>
+      <button class="nav-btn" id="btn-bell" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11a6 6 0 1 0-12 0v3c0 .5-.2 1-.6 1.4L4 17h5"/><path d="M9 17a3 3 0 0 0 6 0"/></svg>
+        <span class="dot" id="bell-dot" hidden></span>
+      </button>
+    </div>
+    <div id="search-wrap" hidden>
+      <div class="search-bar on"><input id="search-q" type="search" placeholder="Name, symbol or mint" autocomplete="off"></div>
+      <div class="search-results" id="search-results" hidden></div>
+    </div>
+    <div class="hero">
+      <div class="hero-row">
+        <div class="display odometer" id="balance">—</div>
+        <span class="paper-pill" id="paper-badge">PAPER</span>
+      </div>
+      <div class="stats">
+        <div class="today" id="today">—</div>
+        <div class="mult" id="mult">—</div>
+      </div>
+    </div>
+    <div class="ranges" id="ranges">
+      <button data-range="LIVE" class="on">LIVE</button>
+      <button data-range="1H">1H</button>
+      <button data-range="4H">4H</button>
+      <button data-range="1D">1D</button>
+      <button data-range="1W">1W</button>
+      <button data-range="ALL">ALL</button>
+    </div>
+    <div class="chart-wrap"><canvas id="equity"></canvas></div>
+
+    <button class="live-card" id="live-card" aria-label="Live screen">
+      <div class="live-frame" id="live-frame">
+        <img id="screen-a" alt="Desk screen">
+        <img id="screen-b" alt="">
+        <div class="live-tag"><span class="live-dot" id="live-dot"></span><span id="live-age">Last frame</span></div>
+        <div class="live-lane" id="live-lane">Idle</div>
+      </div>
+      <div class="live-meta">
+        <div class="live-order" id="live-order">No order yet</div>
+        <div class="checks" id="live-checks"></div>
+      </div>
+    </button>
+
+    <div class="sec"><h2 id="bots-head">Bots</h2></div>
+    <div class="carousel" id="bot-carousel"></div>
+
+    <div class="sec"><h2>Activity</h2><button class="see" id="see-all">See all</button></div>
+    <div id="home-activity"></div>
+  </section>
+
+  <!-- BOTS -->
+  <section id="view-bots" class="view">
+    <div class="nav"><div class="brand">Bots</div></div>
+    <div id="bots-list"></div>
+  </section>
+
+  <!-- ACTIVITY -->
+  <section id="view-activity" class="view">
+    <div class="nav"><div class="brand">Activity</div></div>
+    <div id="activity-list"></div>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section id="view-account" class="view">
+    <div class="nav"><div class="brand">Account</div></div>
+    <div class="seg" id="mode-seg">
+      <button data-mode="PAPER">PAPER</button>
+      <button data-mode="LIVE">LIVE</button>
+    </div>
+    <div class="via-note" id="mode-via">Mode is changed on Telegram.</div>
+    <div class="acct-card">
+      <div class="acct-row"><span class="lab">Cash</span><span class="rhs num" id="acct-cash">—</span></div>
+      <button class="acct-row" id="btn-profile"><span class="lab">Your FOMO profile</span><span class="rhs">Open ›</span></button>
+      <button class="acct-row" id="btn-invite"><span class="lab">Invite a friend</span><span class="rhs">Share ›</span></button>
+    </div>
+    <div id="settings-groups"></div>
+    <div class="group-title">Copy picks</div>
+    <div class="setting">
+      <div class="lab">Chapter 3 prompt</div>
+      <div class="vals" id="copypicks-val">Off</div>
+      <div class="via-note">via Telegram</div>
+    </div>
+    <div class="group-title">Pushes</div>
+    <div class="acct-card">
+      <div class="acct-row"><span class="lab">Notifications</span><span class="rhs">Telegram only</span></div>
+      <div class="acct-row"><span class="lab">Send test push</span><span class="rhs">via Telegram</span></div>
+      <div class="acct-row"><span class="lab">Watch in Grok Bot</span><span class="rhs">Live card on Home</span></div>
+    </div>
+  </section>
+
+  <!-- COIN -->
+  <section id="view-coin" class="view sheet">
+    <button class="back" id="coin-back">‹ Back</button>
+    <div class="coin-head">
+      <h1 id="coin-name">—</h1>
+      <span class="paper-pill" id="coin-paper">PAPER</span>
+      <span class="shield" id="coin-shield"></span>
+    </div>
+    <div class="meta" id="coin-meta"></div>
+    <div class="price-lg num" id="coin-price">—</div>
+    <div class="since" id="coin-since"></div>
+    <div class="chart-wrap" style="height:160px"><canvas id="candles"></canvas></div>
+    <div class="metrics">
+      <div class="metric"><div class="k">Market cap</div><div class="v num" id="coin-mcap">—</div></div>
+      <div class="metric"><div class="k">Liquidity</div><div class="v num" id="coin-liq">—</div></div>
+      <div class="metric"><div class="k">Holders</div><div class="v num" id="coin-holders">—</div></div>
+    </div>
+    <div class="pos-card" id="coin-pos" hidden></div>
+    <div class="actions">
+      <a class="btn primary" id="coin-fomo" target="_blank" rel="noopener">Open on FOMO</a>
+      <button class="btn danger" id="coin-sell">Sell now</button>
+    </div>
+    <div class="sheet-card" id="sell-sheet" hidden>
+      <h3>Sell</h3>
+      <div class="pcts">
+        <button data-pct="25">25%</button>
+        <button data-pct="50">50%</button>
+        <button data-pct="100" class="on">100%</button>
+      </div>
+      <button class="btn danger disabled" id="confirm-sell">Confirm sell</button>
+      <div class="via-note" style="margin-top:10px">Sells go through Telegram until STEP 11.</div>
+    </div>
+  </section>
+
+  <!-- AUDIT -->
+  <section id="view-audit" class="view sheet">
+    <button class="back" id="audit-back">‹ Back</button>
+    <h1 style="font-size:28px;margin:0 0 4px" id="audit-title">Audit</h1>
+    <div class="meta" id="audit-meta"></div>
+    <div class="discs" id="audit-discs"></div>
+    <ul class="layer-list" id="audit-layers"></ul>
+    <div class="social-row" id="audit-social">Social: off</div>
+    <div class="actions"><a class="btn primary" id="audit-fomo" target="_blank" rel="noopener">Open on FOMO</a></div>
+  </section>
+
+  <!-- LIVE FULLSCREEN -->
+  <section id="view-live" class="view sheet">
+    <button class="back" id="live-back">‹ Back</button>
+    <div class="live-fs"><img id="live-fs-img" alt="Live screen"></div>
+    <div class="live-actions">
+      <a class="btn primary" id="live-fomo" hidden target="_blank" rel="noopener">Open on FOMO</a>
+    </div>
+  </section>
+</div>
+
+<nav id="tabbar">
+  <button data-tab="home" class="on" aria-label="Home">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 11h2v9h6v-6h2v6h6v-9h2z"/></svg>
+    Home
+  </button>
+  <button data-tab="bots" aria-label="Bots">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5h8v3h3v8h-3v3H8v-3H5V8h3zm2 5v4h4v-4z"/></svg>
+    Bots
+  </button>
+  <button data-tab="activity" aria-label="Activity">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h14v3H5zm0 5.5h14V14H5zM5 16h9v3H5z"/></svg>
+    Activity
+  </button>
+  <button data-tab="account" aria-label="Account">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8m0 10c4.4 0 8 2 8 4.5V20H4v-1.5C4 16 7.6 14 12 14z"/></svg>
+    Account
+  </button>
+</nav>
+
+<script src="links.js"></script>
+<script src="chart.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
